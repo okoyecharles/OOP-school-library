@@ -1,62 +1,50 @@
-require_relative 'options/print_list'
-require_relative 'options/create_person'
-require_relative 'options/create_book'
-require_relative 'options/create_rental'
-require_relative 'options/get_rentals'
+require_relative 'app'
 
 def main
-  library = {
-    books: [],
-    people: [],
-    rentals: []
-  }
-
-  options = {
-    '1': 'List all books',
-    '2': 'List all people',
-    '3': 'Create a person',
-    '4': 'Create a book',
-    '5': 'Create a rental',
-    '6': 'List all rentals for a given person id',
-    '7': 'Exit'
-  }
-
-  running = true
-
   print "Welcome to School Library App!\n"
+  app = App.new
+  loop do
+    message
+    option = gets.chomp
+    app_case(option, app)
 
-  while running
-    print "Please choose an option by entering a number:\n"
-    options.each { |optionkey, option| print "#{optionkey} - #{option}\n" }
-
-    response = gets.chomp
-
-    case response
-    when '1'
-      print_books(library[:books])
-      print "\n\n"
-    when '2'
-      print_people(library[:people])
-      print "\n\n"
-    when '3'
-      library[:people] << create_person
-    when '4'
-      library[:books] << create_book
-    when '5'
-      if library[:books].empty? || library[:people].empty?
-        print "Error! Try creating a person and book first\n\n"
-      else
-        library[:rentals] << create_rental(library)
-      end
-    when '6'
-      get_rentals_by_id(library)
-    when '7'
-      print "Thank you for using this app!\n\n"
-      running = false
-    else
-      print "Invalid option... Try Again!\n\n"
-    end
+    break if option == '7'
   end
+end
+
+def app_case(option, app)
+  case option
+  when '1'
+    app.print_books
+    print "\n\n"
+  when '2'
+    app.print_people
+    print "\n\n"
+  when '3'
+    app.create_person
+  when '4'
+    app.create_book
+  when '5'
+    app.create_rental
+  when '6'
+    app.rentals_by_id
+  when '7'
+    print "Thank you for using this app!\n\n"
+  else
+    print "Invalid option... Try Again!\n\n"
+  end
+end
+
+def message
+  print "Please choose an option by entering a number:\n"
+  puts "
+  1 - List All Books
+  2 - List All People
+  3 - Create a Person
+  4 - Create a Book
+  5 - Create a Rental
+  6 - List All Rentals
+  7 - Exit"
 end
 
 main
