@@ -3,12 +3,51 @@ require_relative 'student'
 require_relative 'teacher'
 require_relative 'classroom'
 require_relative 'rental'
+require 'json'
+require 'fileutils'
 
 class App
   def initialize
     @books = []
     @people = []
     @rentals = []
+  end
+
+  def load_data
+    return unless File.exist?('ruby/data/rentals.json')
+
+    books = File.open('ruby/data/books.json', 'r') { |file| JSON.parse(file.readline) }
+    @books = books.map { |book| Book.new(book['title'], book['author']) }
+
+    people = File.open('ruby/data/people.json', 'r') { |file| JSON.parse(file.readline) }
+    @people = people.map do |person|
+      if person['specialization']
+        Teacher.new(
+          person['specialization'],
+          person['age'],
+          person['name'],
+          person['parent_permission']
+        )
+      else
+        Student.new(
+          Classroom.new(person['classroom']),
+          person['age'],
+          person['name'],
+          person['parent_permission']
+        )
+      end
+    end
+
+    rentals = File.open('ruby/data/rentals.json', 'r') { |file| JSON.parse(file.readline) }
+    @rentals = rentals.map do |rental|
+      rental_person = @people.find do |person|
+        person.name == rental['person']['name'] && person.age == rental['person']['age']
+      end
+      rental_book = @books.find do |book|
+        book.title == rental['book']['title'] && book.author == rental['book']['author']
+      end
+      Rental.new(rental['date'], rental_person, rental_book)
+    end
   end
 
   def create_book
@@ -117,5 +156,39 @@ class App
       end
       print "\n\n"
     end
+  end
+
+  def leave
+    print "Thank you for using this app!\n\n"
+
+    # Create store and files
+    FileUtils.mkdir_p('ruby/data')
+
+    books = @books.map { |book| { author: book.author, title: book.title } }
+    File.write('ruby/data/books.json', JSON.generate(books))
+
+    people = @people.map do |person|
+      {
+        id: person.id,
+        name: person.name,
+        age: person.age,
+        parent_permission: person.parent_permission,
+        specialization: (person.specialization if person.instance_of? Teacher),
+        classroom: (person.classroom.label if person.instance_of? Student)
+      }
+    end
+    File.write('ruby/data/people.json', JSON.generate(people))
+
+    rentals = @rentals.map do |rental|
+      {
+        person: { name: rental.person.name, age: rental.person.age },
+        book: {
+          title: rental.book.title,
+          author: rental.book.author
+        },
+        date: rental.date
+      }
+    end
+    File.write('ruby/data/rentals.json', JSON.generate(rentals))
   end
 end
