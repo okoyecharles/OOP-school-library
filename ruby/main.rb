@@ -3,6 +3,7 @@ require_relative 'app'
 def main
   print "Welcome to School Library App!\n"
   app = App.new
+  app.load_data
   loop do
     message
     option = gets.chomp
@@ -29,7 +30,7 @@ def app_case(option, app)
   when '6'
     app.rentals_by_id
   when '7'
-    print "Thank you for using this app!\n\n"
+    app.leave
   else
     print "Invalid option... Try Again!\n\n"
   end
