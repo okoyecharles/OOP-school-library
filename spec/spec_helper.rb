@@ -1,0 +1,7 @@
+require_relative '../ruby/book'
+require_relative '../ruby/person'
+require_relative '../ruby/student'
+require_relative '../ruby/classroom'
+require_relative '../ruby/teacher'
+require_relative '../ruby/rental'
+require_relative '../ruby/decorators'

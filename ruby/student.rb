@@ -10,7 +10,7 @@ class Student < Person
   end
 
   def play_hooky
-    '¯|(ツ)/¯'
+    '-\(:))/-'
   end
 
   def add_to_class(classroom)
