@@ -3,7 +3,7 @@ require_relative 'spec_helper'
 describe Teacher do
   context 'Unit Tests' do
     before(:each) do
-      @teacher = Teacher.new("Science", 25, 'Berkay', true)
+      @teacher = Teacher.new('Science', 25, 'Berkay', true)
     end
     it 'class initializes' do
       expect(@teacher).to be_an_instance_of Teacher
